@@ -1,20 +1,20 @@
 name: "Ryzom Client: build on multiple platforms"
 
 on:
-  push:
-    branches: [ "core4", "feature/*" ]
-    paths:
-      - .github/workflows/build-client.yml
-      # TODO use nel package instead
-      - nel/**
-      - ryzom/**
-      - cmake/**
-      - CMakeModules/**
-      - CMakeLists.txt
-      - CMakePresets.json
-      - vcpkg/**
-      - vcpkg.json
-      - vcpkg-configuration.json
+  # push:
+  #   branches: [ "core4", "feature/*" ]
+  #   paths:
+  #     - .github/workflows/build-client.yml
+  #     # TODO use nel package instead
+  #     - nel/**
+  #     - ryzom/**
+  #     - cmake/**
+  #     - CMakeModules/**
+  #     - CMakeLists.txt
+  #     - CMakePresets.json
+  #     - vcpkg/**
+  #     - vcpkg.json
+  #     - vcpkg-configuration.json
   pull_request:
     branches: [ "core4" ]
     paths:
