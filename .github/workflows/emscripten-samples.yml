@@ -1,11 +1,11 @@
 name: Emscripten WebGL 2.0 Samples
 
 on:
-  push:
-    branches: [ "core4", "feature/*" ]
-    paths-ignore:
-      - '.devcontainer/**'
-      - 'snowballs2/**'
+  # push:
+  #   branches: [ "core4", "feature/*" ]
+  #   paths-ignore:
+  #     - '.devcontainer/**'
+  #     - 'snowballs2/**'
   pull_request:
     branches: [ "core4" ]
     paths-ignore:
