@@ -1,19 +1,19 @@
 name: "Ryzom Core: CI / CD"
 
 on:
-  push:
-    branches: [ "core4", "feature/*", "bugfix/*" ]
-    paths-ignore:
-      - '.devcontainer/**'
-      - '.github/workflows/**'
-      - '!.github/workflows/ci.yml'
+  # push:
+  #   branches: [ "core4", "feature/*", "bugfix/*" ]
+  #   paths-ignore:
+  #     - '.devcontainer/**'
+  #     - '.github/workflows/**'
+  #     - '!.github/workflows/ci.yml'
 
-  pull_request:
-    branches: [ "core4" ]
-    paths-ignore:
-      - '.devcontainer/**'
-      - '.github/workflows/**'
-      - '!.github/workflows/ci.yml'
+  # pull_request:
+  #   branches: [ "core4" ]
+  #   paths-ignore:
+  #     - '.devcontainer/**'
+  #     - '.github/workflows/**'
+  #     - '!.github/workflows/ci.yml'
 
   workflow_dispatch:
 
@@ -55,15 +55,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-22.04
-            cmake-preset: ci-linux-nel-static
-            build-type: static
           - os: ubuntu-24.04
             cmake-preset: ci-linux-nel-static
             build-type: static
-          - os: ubuntu-24.04
-            cmake-preset: ci-linux-nel-dynamic
-            build-type: dynamic
           #- os: windows-2025
           #  cmake-preset: ci-windows-nel-vcpkg
           #  build-type: static
@@ -108,11 +102,6 @@ jobs:
         include:
           - os: ubuntu-22.04
             cmake-preset: ci-linux-nelns
-          - os: ubuntu-24.04
-            cmake-preset: ci-linux-nelns
-            docker: true
-          - os: ubuntu-24.04
-            cmake-preset: ci-linux-nelns-vcpkg
     steps:
       - uses: actions/checkout@v7
 
@@ -146,11 +135,11 @@ jobs:
           build-dir: ${{ needs.strings.outputs.build-dir }}
           build-version: ${{ needs.strings.outputs.build-version }}
 
-      - uses: actions/upload-artifact@v7
-        with:
-          name: nelns-${{ matrix.os }}-${{ matrix.cmake-preset }}-${{ needs.strings.outputs.build-version }}
-          path: ${{ needs.strings.outputs.build-dir }}/nelns/nelns-*
-          if-no-files-found: error
+      # - uses: actions/upload-artifact@v7
+      #   with:
+      #     name: nelns-${{ matrix.os }}-${{ matrix.cmake-preset }}-${{ needs.strings.outputs.build-version }}
+      #     path: ${{ needs.strings.outputs.build-dir }}/nelns/nelns-*
+      #     if-no-files-found: error
 
 
   ryzom:
@@ -164,9 +153,6 @@ jobs:
           - os: ubuntu-24.04
             cmake-preset: ci-linux-ryzom-static
             build-type: static
-          - os: ubuntu-24.04
-            cmake-preset: ci-linux-ryzom-dynamic
-            build-type: dynamic
     steps:
       - uses: actions/checkout@v7
 
@@ -199,11 +185,11 @@ jobs:
           build-dir: ${{ needs.strings.outputs.build-dir }}
           build-version: ${{ needs.strings.outputs.build-version }}
 
-      - uses: actions/upload-artifact@v7
-        with:
-          name: ryzom-${{ matrix.os }}-${{ matrix.build-type }}-${{ needs.strings.outputs.build-version }}
-          path: ${{ needs.strings.outputs.build-dir }}/ryzom/ryzom-*
-          if-no-files-found: error
+      # - uses: actions/upload-artifact@v7
+      #   with:
+      #     name: ryzom-${{ matrix.os }}-${{ matrix.build-type }}-${{ needs.strings.outputs.build-version }}
+      #     path: ${{ needs.strings.outputs.build-dir }}/ryzom/ryzom-*
+      #     if-no-files-found: error
 
 
   snowballs:
@@ -212,7 +198,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-22.04, ubuntu-24.04 ]
+        os: [ ubuntu-24.04 ]
     steps:
       - uses: actions/checkout@v7
 
@@ -244,108 +230,108 @@ jobs:
           build-dir: ${{ needs.strings.outputs.build-dir }}
           build-version: ${{ needs.strings.outputs.build-version }}
 
-      - uses: actions/upload-artifact@v7
-        with:
-          name: snowballs-${{ matrix.os }}-${{ needs.strings.outputs.build-version }}
-          path: ${{ needs.strings.outputs.build-dir }}/snowballs/snowballs-*
+      # - uses: actions/upload-artifact@v7
+      #   with:
+      #     name: snowballs-${{ matrix.os }}-${{ needs.strings.outputs.build-version }}
+      #     path: ${{ needs.strings.outputs.build-dir }}/snowballs/snowballs-*
 
 
-  studio:
-    name: "Studio"
-    needs: [ strings, nel ]
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ ubuntu-22.04, ubuntu-24.04 ]
-    steps:
-      - uses: actions/checkout@v7
+  # studio:
+  #   name: "Studio"
+  #   needs: [ strings, nel ]
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [ ubuntu-22.04, ubuntu-24.04 ]
+  #   steps:
+  #     - uses: actions/checkout@v7
 
-      - uses: actions/cache@v6
-        with:
-          path: ~/.cache/ccache
-          key: ccache-studio-${{ matrix.os }}-${{ needs.strings.outputs.week }}-${{ github.sha }}
-          restore-keys: ccache-studio-${{ matrix.os }}-${{ needs.strings.outputs.week }}-
+  #     - uses: actions/cache@v6
+  #       with:
+  #         path: ~/.cache/ccache
+  #         key: ccache-studio-${{ matrix.os }}-${{ needs.strings.outputs.week }}-${{ github.sha }}
+  #         restore-keys: ccache-studio-${{ matrix.os }}-${{ needs.strings.outputs.week }}-
 
-      - uses: actions/download-artifact@v8
-        with:
-          pattern: nel-${{ matrix.os }}-static-*
-          merge-multiple: true
-          path: ${{ needs.strings.outputs.build-dir }}
+  #     - uses: actions/download-artifact@v8
+  #       with:
+  #         pattern: nel-${{ matrix.os }}-static-*
+  #         merge-multiple: true
+  #         path: ${{ needs.strings.outputs.build-dir }}
 
-      - id: cache
-        uses: actions/cache@v6
-        with:
-          key: studio-${{ matrix.os }}-${{ hashFiles('build/nel-*.sh', 'studio/**', '.github/studio/**', 'cmake/**', 'CMakeModules/**', 'CMakeLists.txt', 'CMakePresets.json') }}
-          path: ${{ needs.strings.outputs.build-dir }}/studio/studio-*
+  #     - id: cache
+  #       uses: actions/cache@v6
+  #       with:
+  #         key: studio-${{ matrix.os }}-${{ hashFiles('build/nel-*.sh', 'studio/**', '.github/studio/**', 'cmake/**', 'CMakeModules/**', 'CMakeLists.txt', 'CMakePresets.json') }}
+  #         path: ${{ needs.strings.outputs.build-dir }}/studio/studio-*
 
-      - uses: ./.github/studio
-        if: steps.cache.outputs.cache-hit != 'true'
-        with:
-          install-dir: ${{ needs.strings.outputs.install-dir }}
-          build-dir: ${{ needs.strings.outputs.build-dir }}
-          build-version: ${{ needs.strings.outputs.build-version }}
-          os: ${{ matrix.os }}
+  #     - uses: ./.github/studio
+  #       if: steps.cache.outputs.cache-hit != 'true'
+  #       with:
+  #         install-dir: ${{ needs.strings.outputs.install-dir }}
+  #         build-dir: ${{ needs.strings.outputs.build-dir }}
+  #         build-version: ${{ needs.strings.outputs.build-version }}
+  #         os: ${{ matrix.os }}
 
-      - uses: actions/upload-artifact@v7
-        with:
-          name: studio-${{ matrix.os }}-${{ needs.strings.outputs.build-version }}
-          path: ${{ needs.strings.outputs.build-dir }}/studio/studio-*
+  #     - uses: actions/upload-artifact@v7
+  #       with:
+  #         name: studio-${{ matrix.os }}-${{ needs.strings.outputs.build-version }}
+  #         path: ${{ needs.strings.outputs.build-dir }}/studio/studio-*
 
-  web:
-    name: "Web"
-    needs: [ strings ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
+  # web:
+  #   name: "Web"
+  #   needs: [ strings ]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v7
 
-      - id: cache
-        uses: actions/cache@v6
-        with:
-          key: studio-${{ matrix.os }}-${{ hashFiles('web/**', '.github/web/**') }}
-          path: ${{ needs.strings.outputs.build-dir }}/web/web-*
+  #     - id: cache
+  #       uses: actions/cache@v6
+  #       with:
+  #         key: studio-${{ matrix.os }}-${{ hashFiles('web/**', '.github/web/**') }}
+  #         path: ${{ needs.strings.outputs.build-dir }}/web/web-*
 
-      - uses: ./.github/web
-        if: steps.cache.outputs.cache-hit != 'true'
-        with:
-          build-dir: ${{ needs.strings.outputs.build-dir }}
-          build-version: ${{ needs.strings.outputs.build-version }}
-          image-group: ${{ needs.strings.outputs.image-group }}
-          image-version: ${{ needs.strings.outputs.image-version }}
+  #     - uses: ./.github/web
+  #       if: steps.cache.outputs.cache-hit != 'true'
+  #       with:
+  #         build-dir: ${{ needs.strings.outputs.build-dir }}
+  #         build-version: ${{ needs.strings.outputs.build-version }}
+  #         image-group: ${{ needs.strings.outputs.image-group }}
+  #         image-version: ${{ needs.strings.outputs.image-version }}
 
-      - uses: actions/upload-artifact@v7
-        with:
-          name: web-${{ needs.strings.outputs.build-version }}
-          path: ${{ needs.strings.outputs.build-dir }}/web/web-*
+  #     - uses: actions/upload-artifact@v7
+  #       with:
+  #         name: web-${{ needs.strings.outputs.build-version }}
+  #         path: ${{ needs.strings.outputs.build-dir }}/web/web-*
 
 
-  publish:
-    needs: [ strings, nelns, snowballs, web ]
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
-    if: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch ) }}
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          pattern: "*-ubuntu-24.04-*"
-          merge-multiple: true
-          path: ${{ needs.strings.outputs.build-dir }}
+  # publish:
+  #   needs: [ strings, nelns, snowballs, web ]
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     packages: write
+  #     contents: read
+  #   if: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch ) }}
+  #   steps:
+  #     - uses: actions/download-artifact@v8
+  #       with:
+  #         pattern: "*-ubuntu-24.04-*"
+  #         merge-multiple: true
+  #         path: ${{ needs.strings.outputs.build-dir }}
 
-      - uses: actions/download-artifact@v8
-        with:
-          pattern: "web-*"
-          merge-multiple: true
-          path: ${{ needs.strings.outputs.build-dir }}
+  #     - uses: actions/download-artifact@v8
+  #       with:
+  #         pattern: "web-*"
+  #         merge-multiple: true
+  #         path: ${{ needs.strings.outputs.build-dir }}
 
-      - run: find ${{ needs.strings.outputs.build-dir }}
+  #     - run: find ${{ needs.strings.outputs.build-dir }}
 
-      - run: find ${{ needs.strings.outputs.build-dir }} -type f -iname *-docker-*.tar -exec docker load --input {} \;
+  #     - run: find ${{ needs.strings.outputs.build-dir }} -type f -iname *-docker-*.tar -exec docker load --input {} \;
 
-      - name: Push image
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
-          docker images
-          docker push "${{ needs.strings.outputs.image-group }}/ryzomcore-nelns"
-          docker push "${{ needs.strings.outputs.image-group }}/ryzomcore-snowballs"
-          docker push "${{ needs.strings.outputs.image-group }}/ryzomcore-web"
+  #     - name: Push image
+  #       run: |
+  #         echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+  #         docker images
+  #         docker push "${{ needs.strings.outputs.image-group }}/ryzomcore-nelns"
+  #         docker push "${{ needs.strings.outputs.image-group }}/ryzomcore-snowballs"
+  #         docker push "${{ needs.strings.outputs.image-group }}/ryzomcore-web"
